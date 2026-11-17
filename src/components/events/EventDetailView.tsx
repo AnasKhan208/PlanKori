@@ -81,7 +81,7 @@ export function EventDetailView({ event, packages }: EventDetailViewProps) {
       await updateEventAction(event.id, {
         title: title.trim(),
         event_type: eventType.trim(),
-        event_date: eventDate || null,
+        event_date: eventDate || undefined,
         location_city: city.trim(),
         budget: parseInt(budget, 10) || event.budget,
         headcount: parseInt(headcount, 10) || event.headcount,

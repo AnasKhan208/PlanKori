@@ -127,7 +127,7 @@ export async function saveManualPackageAction(eventId: string, vendorKeys: strin
 
   revalidatePath(`/dashboard/events/${eventId}`);
   revalidatePath(`/dashboard/events/${eventId}/browse`);
-  return { success: true, packageId: pkg.id, totalCost: pkg.totalCost };
+  return { success: true, packageId: pkg.id, totalCost: pkg.total_cost };
 }
 
 export async function updateProfileAction(data: { full_name: string; phone: string }) {

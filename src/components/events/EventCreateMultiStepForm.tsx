@@ -410,7 +410,7 @@ export function EventCreateMultiStepForm() {
                     type="number"
                     min={1}
                     max={10000}
-                    {...register("headcount")}
+                    {...register("headcount", { valueAsNumber: true })}
                     className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none text-sm font-semibold text-zinc-900"
                   />
                 </div>
@@ -460,7 +460,7 @@ export function EventCreateMultiStepForm() {
                     type="number"
                     min={5000}
                     step={1000}
-                    {...register("budget")}
+                    {...register("budget", { valueAsNumber: true })}
                     className="w-full pl-14 pr-4 py-2.5 rounded-xl border border-zinc-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none text-sm font-bold text-zinc-900"
                   />
                 </div>
