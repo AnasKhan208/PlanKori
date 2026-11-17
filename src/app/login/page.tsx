@@ -3,16 +3,13 @@
 import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { loginSchema } from "@/lib/validators/auth";
+import { loginAction } from "./actions";
 import { Lock, Mail, AlertCircle, LogIn } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirectTo");
-
-  const supabase = createClient();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,60 +30,39 @@ function LoginForm() {
     setErrors({});
     setGeneralError(null);
 
-    const validation = loginSchema.safeParse({
-      email: email.trim(),
-      password,
-    });
-
-    if (!validation.success) {
-      const fieldErrors: Record<string, string> = {};
-      for (const issue of validation.error.issues) {
-        const fieldName = issue.path[0] as string;
-        if (!fieldErrors[fieldName]) {
-          fieldErrors[fieldName] = issue.message;
-        }
-      }
-      setErrors(fieldErrors);
+    if (!email.trim()) {
+      setErrors({ email: "Email is required" });
+      return;
+    }
+    if (!password) {
+      setErrors({ password: "Password is required" });
       return;
     }
 
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: validation.data.email,
-        password: validation.data.password,
-      });
+      const result = await loginAction({ email: email.trim(), password });
 
-      if (error) {
-        setGeneralError(error.message);
+      if (!result.success) {
+        setGeneralError(result.error || "Invalid credentials.");
         setLoading(false);
         return;
       }
 
-      if (data.user) {
-        // Query user's profile to redirect to their designated portal
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", data.user.id)
-          .maybeSingle();
+      router.refresh();
 
-        router.refresh();
+      if (redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")) {
+        router.push(redirectTo);
+        return;
+      }
 
-        if (redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")) {
-          router.push(redirectTo);
-          return;
-        }
-
-        const userRole = profile?.role || data.user.user_metadata?.role || "host";
-        if (userRole === "admin") {
-          router.push("/admin");
-        } else if (userRole === "vendor") {
-          router.push("/vendor/dashboard");
-        } else {
-          router.push("/dashboard");
-        }
+      if (result.role === "admin") {
+        router.push("/admin");
+      } else if (result.role === "vendor") {
+        router.push("/vendor/dashboard");
+      } else {
+        router.push("/dashboard");
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "An unexpected error occurred during login.";
@@ -182,21 +158,21 @@ function LoginForm() {
           <button
             type="button"
             onClick={() => fillDemoAccount("host1@plankori.test")}
-            className="text-xs px-2.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-medium transition"
+            className="text-xs px-2.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-medium transition cursor-pointer"
           >
-            Host: Rahim
+            Host: Rahim (host1)
           </button>
           <button
             type="button"
             onClick={() => fillDemoAccount("vendor01@plankori.test")}
-            className="text-xs px-2.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-medium transition"
+            className="text-xs px-2.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-medium transition cursor-pointer"
           >
             Vendor: Venue
           </button>
           <button
             type="button"
             onClick={() => fillDemoAccount("admin@plankori.test")}
-            className="text-xs px-2.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-medium transition"
+            className="text-xs px-2.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-medium transition cursor-pointer"
           >
             Admin
           </button>

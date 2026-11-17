@@ -36,27 +36,55 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Use getUser() instead of getSession() for server-verified authentication
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Check Supabase authenticated user first
+  let user: { id: string; email?: string; user_metadata?: Record<string, unknown> } | null = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch {
+    // If Supabase server is not running locally, catch gracefully
+    user = null;
+  }
 
-  // If user is authenticated, determine their role
+  // Check demo session cookie fallback
+  const demoCookie = request.cookies.get("plankori-demo-session");
   let role: UserRole = "host";
-  if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .maybeSingle();
 
-    if (profile?.role) {
-      role = profile.role;
-    } else {
-      const metaRole = user.user_metadata?.role;
+  if (user) {
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (profile?.role) {
+        role = profile.role;
+      } else {
+        const metaRole = user.user_metadata?.role as UserRole | undefined;
+        if (metaRole === "vendor" || metaRole === "admin") {
+          role = metaRole;
+        }
+      }
+    } catch {
+      const metaRole = user.user_metadata?.role as UserRole | undefined;
       if (metaRole === "vendor" || metaRole === "admin") {
         role = metaRole;
       }
+    }
+  } else if (demoCookie?.value) {
+    try {
+      const parsed = JSON.parse(decodeURIComponent(demoCookie.value));
+      if (parsed && parsed.id && parsed.role) {
+        user = {
+          id: parsed.id,
+          email: parsed.email,
+          user_metadata: { role: parsed.role, full_name: parsed.full_name },
+        };
+        role = parsed.role;
+      }
+    } catch {
+      // invalid cookie
     }
   }
 
