@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "seed:vendors": "node --experimental-strip-types scripts/seed-vendors.ts",
+    "reembed": "node --experimental-strip-types scripts/reembed.ts"
   },
   "dependencies": {
     "@google/genai": "^3.4.0",

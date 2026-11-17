@@ -104,6 +104,7 @@ export interface Database {
           featured_until: string | null;
           embedding: string | null;
           embedding_source: string | null;
+          seed_key: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -130,6 +131,7 @@ export interface Database {
           featured_until?: string | null;
           embedding?: string | null;
           embedding_source?: string | null;
+          seed_key?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -156,6 +158,7 @@ export interface Database {
           featured_until?: string | null;
           embedding?: string | null;
           embedding_source?: string | null;
+          seed_key?: string | null;
           created_at?: string;
           updated_at?: string;
         };
