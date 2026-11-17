@@ -148,45 +148,175 @@ sequenceDiagram
 
 ## Entity-Relationship Diagram
 
-> **Placeholder** — will be completed after the database schema migration is created.
-
 ```mermaid
 erDiagram
-    USERS ||--o{ EVENTS : creates
-    USERS ||--o{ VENDOR_LISTINGS : owns
-    EVENTS ||--o{ MOOD_BOARDS : has
-    EVENTS ||--o{ EVENT_PACKAGES : has
-    EVENT_PACKAGES ||--|{ PACKAGE_ITEMS : contains
-    PACKAGE_ITEMS }o--|| VENDOR_LISTINGS : references
-    EVENTS ||--o{ BOOKING_REQUESTS : generates
-    BOOKING_REQUESTS }o--|| VENDOR_LISTINGS : targets
-    EVENTS ||--o{ PAYMENTS : receives
-    PAYMENTS ||--o{ PAYOUTS : splits_into
-    USERS {
+    PROFILES ||--o{ VENDORS : owns
+    PROFILES ||--o{ EVENTS : hosts
+    PROFILES ||--o{ PAYMENTS : pays
+    PROFILES ||--o{ AI_LOGS : generates
+
+    EVENTS ||--o{ PACKAGES : contains
+    EVENTS ||--o{ MOOD_BOARDS : displays
+    EVENTS ||--o{ CHAT_MESSAGES : records
+    EVENTS ||--o{ BOOKING_REQUESTS : initiates
+    EVENTS ||--o{ PAYMENTS : billed_under
+
+    PACKAGES ||--|{ PACKAGE_ITEMS : includes
+    PACKAGES ||--o{ BOOKING_REQUESTS : requests
+    PACKAGES ||--o{ PAYMENTS : funded_by
+
+    VENDORS ||--o{ PACKAGE_ITEMS : selected_in
+    VENDORS ||--o{ BOOKING_REQUESTS : receives
+    VENDORS ||--o{ VENDOR_PAYOUTS : collects
+
+    PACKAGE_ITEMS ||--o{ BOOKING_REQUESTS : references
+
+    PAYMENTS ||--o{ VENDOR_PAYOUTS : distributes
+
+    PROFILES {
         uuid id PK
-        string email
         string full_name
-        enum role
-        timestamp created_at
+        user_role role
+        string phone
+        timestamptz created_at
+        timestamptz updated_at
     }
+
+    VENDORS {
+        uuid id PK
+        uuid owner_id FK
+        string business_name
+        service_category category
+        string description
+        string location_city
+        int base_price
+        price_unit price_unit
+        int min_capacity
+        int max_capacity
+        text_array tags
+        text_array themes
+        text_array dietary_options
+        text_array portfolio_image_urls
+        numeric rating
+        int review_count
+        boolean is_new
+        boolean is_active
+        boolean is_featured
+        timestamptz featured_until
+        vector embedding
+        string embedding_source
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
     EVENTS {
         uuid id PK
         uuid host_id FK
-        enum event_type
-        enum status
+        string title
+        string event_type
+        date event_date
+        string location_city
         int budget
-        jsonb requirements
-        vector embedding
+        int headcount
+        string theme_description
+        text_array dietary_needs
+        text_array must_have_categories
+        event_status status
+        jsonb extracted_json
+        timestamptz created_at
+        timestamptz updated_at
     }
-    VENDOR_LISTINGS {
+
+    PACKAGES {
+        uuid id PK
+        uuid event_id FK
+        package_tier tier
+        int total_cost
+        numeric budget_used_percent
+        boolean is_selected
+        string notes
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    PACKAGE_ITEMS {
+        uuid id PK
+        uuid package_id FK
+        uuid vendor_id FK
+        service_category category
+        int estimated_cost
+        numeric match_score
+        string match_reason
+        timestamptz created_at
+    }
+
+    MOOD_BOARDS {
+        uuid id PK
+        uuid event_id FK
+        string prompt
+        string image_url
+        boolean is_placeholder
+        timestamptz created_at
+    }
+
+    CHAT_MESSAGES {
+        uuid id PK
+        uuid event_id FK
+        chat_role role
+        string content
+        timestamptz created_at
+    }
+
+    BOOKING_REQUESTS {
+        uuid id PK
+        uuid event_id FK
+        uuid package_id FK
+        uuid vendor_id FK
+        uuid package_item_id FK
+        booking_request_status status
+        timestamptz created_at
+        timestamptz responded_at
+    }
+
+    PAYMENTS {
+        uuid id PK
+        uuid event_id FK
+        uuid package_id FK
+        uuid host_id FK
+        int amount
+        string currency
+        payment_type type
+        payment_status status
+        string provider
+        string provider_tran_id UK
+        string provider_val_id
+        jsonb raw_response
+        timestamptz created_at
+        timestamptz paid_at
+    }
+
+    VENDOR_PAYOUTS {
         uuid id PK
         uuid vendor_id FK
-        enum category
-        int base_price
-        enum price_unit
-        float rating
-        vector embedding
-        string embedding_source
+        uuid payment_id FK
+        int gross_amount
+        int commission_amount
+        int net_amount
+        payout_status status
+        timestamptz paid_at
+        string reference_note
+        timestamptz created_at
+    }
+
+    AI_LOGS {
+        uuid id PK
+        uuid user_id FK
+        string feature
+        string mode
+        int latency_ms
+        boolean success
+        string error
+        timestamptz created_at
     }
 ```
 
