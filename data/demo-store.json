@@ -131,6 +131,31 @@
       "extracted_json": null,
       "created_at": "2026-11-17T23:34:43.735Z",
       "updated_at": "2026-11-17T23:34:43.754Z"
+    },
+    "evt-1794960887213-fry6e": {
+      "id": "evt-1794960887213-fry6e",
+      "host_id": "h0000000-0000-0000-0000-000000000001",
+      "title": "Traditional Dhaka Gaye Holud Celebration",
+      "event_type": "Wedding",
+      "event_date": "2026-11-19",
+      "location_city": "Dhaka",
+      "budget": 800000,
+      "headcount": 200,
+      "theme_description": "Vibrant yellow and orange marigold floral theme with traditional dhol music",
+      "dietary_needs": [
+        "halal",
+        "traditional Bengali"
+      ],
+      "must_have_categories": [
+        "venue",
+        "catering",
+        "decoration",
+        "photography"
+      ],
+      "status": "draft",
+      "extracted_json": null,
+      "created_at": "2026-11-18T00:14:47.213Z",
+      "updated_at": "2026-11-18T00:14:47.213Z"
     }
   },
   "packages": {

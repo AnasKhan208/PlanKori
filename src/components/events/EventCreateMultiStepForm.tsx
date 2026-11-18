@@ -4,14 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  createEventSchema,
-  eventStep1Schema,
-  eventStep2Schema,
-  eventStep3Schema,
-  eventStep4Schema,
-  type CreateEventInput,
-} from "@/lib/validators/event";
+import { z } from "zod";
+import { createEventSchema } from "@/lib/validators/event";
 import { createEventAction } from "@/app/dashboard/actions";
 import Link from "next/link";
 import {
@@ -85,12 +79,19 @@ export function EventCreateMultiStepForm() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Tomorrow's date formatted as YYYY-MM-DD
+  // Tomorrow's date formatted as YYYY-MM-DD using local date parts (avoids UTC offset shifts in UTC+6)
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const minDateString = tomorrow.toISOString().split("T")[0];
+  const year = tomorrow.getFullYear();
+  const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
+  const day = String(tomorrow.getDate()).padStart(2, "0");
+  const minDateString = `${year}-${month}-${day}`;
 
-  const form = useForm<CreateEventInput>({
+  const form = useForm<
+    z.input<typeof createEventSchema>,
+    unknown,
+    z.output<typeof createEventSchema>
+  >({
     resolver: zodResolver(createEventSchema),
     mode: "onBlur",
     defaultValues: {
@@ -173,7 +174,7 @@ export function EventCreateMultiStepForm() {
     }
   }
 
-  async function onSubmit(data: CreateEventInput) {
+  async function onSubmit(data: z.output<typeof createEventSchema>) {
     setSubmitting(true);
     setSubmitError(null);
 
@@ -230,33 +231,30 @@ export function EventCreateMultiStepForm() {
                         if (step.num < currentStep) setCurrentStep(step.num);
                       }}
                       disabled={step.num > currentStep}
-                      className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all ${
-                        isPassed
-                          ? "bg-amber-600 text-white cursor-pointer"
-                          : isCurrent
+                      className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all ${isPassed
+                        ? "bg-amber-600 text-white cursor-pointer"
+                        : isCurrent
                           ? "bg-amber-600 text-white ring-4 ring-amber-100"
                           : "bg-zinc-100 text-zinc-400"
-                      }`}
+                        }`}
                     >
                       {isPassed ? <CheckCircle2 className="w-4 h-4" /> : step.num}
                     </button>
                     <span
-                      className={`text-[11px] font-medium mt-1.5 hidden sm:inline ${
-                        isCurrent
-                          ? "text-amber-700 font-bold"
-                          : isPassed
+                      className={`text-[11px] font-medium mt-1.5 hidden sm:inline ${isCurrent
+                        ? "text-amber-700 font-bold"
+                        : isPassed
                           ? "text-zinc-700"
                           : "text-zinc-400"
-                      }`}
+                        }`}
                     >
                       {step.label}
                     </span>
                   </div>
                   {idx < stepsList.length - 1 && (
                     <div
-                      className={`flex-1 h-0.5 mx-2 transition-all ${
-                        currentStep > step.num ? "bg-amber-600" : "bg-zinc-200"
-                      }`}
+                      className={`flex-1 h-0.5 mx-2 transition-all ${currentStep > step.num ? "bg-amber-600" : "bg-zinc-200"
+                        }`}
                     />
                   )}
                 </div>
@@ -297,11 +295,10 @@ export function EventCreateMultiStepForm() {
                         key={et.value}
                         type="button"
                         onClick={() => setValue("event_type", et.value)}
-                        className={`flex items-center gap-2.5 p-3 rounded-xl border text-left text-xs font-semibold transition cursor-pointer ${
-                          isSelected
-                            ? "bg-amber-50 border-amber-500 text-amber-900 ring-1 ring-amber-500"
-                            : "bg-white border-zinc-200 text-zinc-700 hover:border-zinc-300"
-                        }`}
+                        className={`flex items-center gap-2.5 p-3 rounded-xl border text-left text-xs font-semibold transition cursor-pointer ${isSelected
+                          ? "bg-amber-50 border-amber-500 text-amber-900 ring-1 ring-amber-500"
+                          : "bg-white border-zinc-200 text-zinc-700 hover:border-zinc-300"
+                          }`}
                       >
                         <Icon className={`w-4 h-4 ${isSelected ? "text-amber-600" : "text-zinc-400"}`} />
                         <span>{et.label}</span>
@@ -373,11 +370,10 @@ export function EventCreateMultiStepForm() {
                       key={c}
                       type="button"
                       onClick={() => setValue("location_city", c)}
-                      className={`px-4 py-2 rounded-xl text-xs font-semibold border transition cursor-pointer ${
-                        watchedValues.location_city === c
-                          ? "bg-amber-600 border-amber-600 text-white shadow-sm"
-                          : "bg-white border-zinc-200 text-zinc-700 hover:border-zinc-300"
-                      }`}
+                      className={`px-4 py-2 rounded-xl text-xs font-semibold border transition cursor-pointer ${watchedValues.location_city === c
+                        ? "bg-amber-600 border-amber-600 text-white shadow-sm"
+                        : "bg-white border-zinc-200 text-zinc-700 hover:border-zinc-300"
+                        }`}
                     >
                       {c}
                     </button>
@@ -410,7 +406,7 @@ export function EventCreateMultiStepForm() {
                     type="number"
                     min={1}
                     max={10000}
-                    {...register("headcount", { valueAsNumber: true })}
+                    {...register("headcount")}
                     className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none text-sm font-semibold text-zinc-900"
                   />
                 </div>
@@ -460,7 +456,7 @@ export function EventCreateMultiStepForm() {
                     type="number"
                     min={5000}
                     step={1000}
-                    {...register("budget", { valueAsNumber: true })}
+                    {...register("budget")}
                     className="w-full pl-14 pr-4 py-2.5 rounded-xl border border-zinc-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none text-sm font-bold text-zinc-900"
                   />
                 </div>
@@ -508,11 +504,10 @@ export function EventCreateMultiStepForm() {
                         key={diet}
                         type="button"
                         onClick={() => toggleDietary(diet)}
-                        className={`text-xs px-3 py-1.5 rounded-lg border capitalize transition cursor-pointer ${
-                          isSelected
-                            ? "bg-amber-100 border-amber-300 text-amber-900 font-semibold"
-                            : "bg-white border-zinc-200 text-zinc-600 hover:border-zinc-300"
-                        }`}
+                        className={`text-xs px-3 py-1.5 rounded-lg border capitalize transition cursor-pointer ${isSelected
+                          ? "bg-amber-100 border-amber-300 text-amber-900 font-semibold"
+                          : "bg-white border-zinc-200 text-zinc-600 hover:border-zinc-300"
+                          }`}
                       >
                         {diet}
                       </button>
@@ -581,18 +576,16 @@ export function EventCreateMultiStepForm() {
                         key={cat.id}
                         type="button"
                         onClick={() => toggleCategory(cat.id)}
-                        className={`flex items-center gap-3 p-3 rounded-xl border text-left text-xs font-semibold transition cursor-pointer ${
-                          isChecked
-                            ? "bg-amber-50/70 border-amber-500 text-amber-950"
-                            : "bg-zinc-50 border-zinc-200 text-zinc-400"
-                        }`}
+                        className={`flex items-center gap-3 p-3 rounded-xl border text-left text-xs font-semibold transition cursor-pointer ${isChecked
+                          ? "bg-amber-50/70 border-amber-500 text-amber-950"
+                          : "bg-zinc-50 border-zinc-200 text-zinc-400"
+                          }`}
                       >
                         <div
-                          className={`w-4 h-4 rounded flex items-center justify-center border text-[10px] ${
-                            isChecked
-                              ? "bg-amber-600 border-amber-600 text-white"
-                              : "border-zinc-300 bg-white"
-                          }`}
+                          className={`w-4 h-4 rounded flex items-center justify-center border text-[10px] ${isChecked
+                            ? "bg-amber-600 border-amber-600 text-white"
+                            : "border-zinc-300 bg-white"
+                            }`}
                         >
                           {isChecked && "✓"}
                         </div>
@@ -630,11 +623,11 @@ export function EventCreateMultiStepForm() {
                     <p className="font-medium text-zinc-800 mt-0.5">
                       {watchedValues.event_date
                         ? new Date(watchedValues.event_date).toLocaleDateString("en-US", {
-                            weekday: "short",
-                            month: "long",
-                            day: "numeric",
-                            year: "numeric",
-                          })
+                          weekday: "short",
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                        })
                         : "TBA"}
                     </p>
                   </div>
@@ -654,7 +647,7 @@ export function EventCreateMultiStepForm() {
                   <div>
                     <span className="text-xs text-zinc-400 uppercase font-semibold">Headcount</span>
                     <p className="font-bold text-zinc-900 text-base mt-0.5">
-                      {watchedValues.headcount} Guests
+                      {Number(watchedValues.headcount) || 0} Guests
                     </p>
                   </div>
                 </div>
@@ -670,7 +663,7 @@ export function EventCreateMultiStepForm() {
                   <span className="text-xs text-zinc-400 uppercase font-semibold">Dietary Needs</span>
                   <div className="flex flex-wrap gap-1.5 mt-1">
                     {(watchedValues.dietary_needs || []).length > 0 ? (
-                      watchedValues.dietary_needs.map((d) => (
+                      (watchedValues.dietary_needs || []).map((d) => (
                         <span key={d} className="text-xs px-2 py-0.5 bg-white border border-zinc-200 rounded capitalize">
                           {d}
                         </span>

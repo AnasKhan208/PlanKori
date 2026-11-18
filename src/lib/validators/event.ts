@@ -25,7 +25,7 @@ export const eventStep2Schema = z.object({
     .string()
     .min(2, "Please choose or enter a city")
     .max(60, "City name too long"),
-  headcount: z
+  headcount: z.coerce
     .number({ message: "Headcount must be a number" })
     .int("Headcount must be a whole number")
     .min(1, "Headcount must be at least 1 guest")
@@ -33,11 +33,11 @@ export const eventStep2Schema = z.object({
 });
 
 export const eventStep3Schema = z.object({
-  budget: z
+  budget: z.coerce
     .number({ message: "Budget must be a number" })
     .int("Budget must be an integer in BDT")
     .min(5000, "Budget must be at least 5,000 BDT"),
-  dietary_needs: z.array(z.string()),
+  dietary_needs: z.array(z.string()).default([]),
 });
 
 export const eventStep4Schema = z.object({
@@ -45,7 +45,7 @@ export const eventStep4Schema = z.object({
     .string()
     .min(5, "Please describe your preferred theme, mood, or vibe (at least 5 characters)")
     .max(1500, "Theme description cannot exceed 1500 characters"),
-  must_have_categories: z.array(z.string()),
+  must_have_categories: z.array(z.string()).default([]),
 });
 
 export const createEventSchema = eventStep1Schema

@@ -104,11 +104,11 @@ export function EventDetailView({ event, packages }: EventDetailViewProps) {
 
   const formattedDate = event.event_date
     ? new Date(event.event_date).toLocaleDateString("en-US", {
-        weekday: "short",
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      })
+      weekday: "short",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    })
     : "Date TBA";
 
   return (
@@ -178,11 +178,10 @@ export function EventDetailView({ event, packages }: EventDetailViewProps) {
             <button
               type="button"
               onClick={() => setActiveTab("overview")}
-              className={`pb-3.5 px-2 text-sm font-semibold border-b-2 transition cursor-pointer flex items-center gap-2 whitespace-nowrap ${
-                activeTab === "overview"
-                  ? "border-amber-600 text-amber-700 font-bold"
-                  : "border-transparent text-zinc-500 hover:text-zinc-800"
-              }`}
+              className={`pb-3.5 px-2 text-sm font-semibold border-b-2 transition cursor-pointer flex items-center gap-2 whitespace-nowrap ${activeTab === "overview"
+                ? "border-amber-600 text-amber-700 font-bold"
+                : "border-transparent text-zinc-500 hover:text-zinc-800"
+                }`}
             >
               <Calendar className="w-4 h-4" />
               <span>Overview & Requirements</span>
@@ -191,11 +190,10 @@ export function EventDetailView({ event, packages }: EventDetailViewProps) {
             <button
               type="button"
               onClick={() => setActiveTab("moodboard")}
-              className={`pb-3.5 px-2 text-sm font-semibold border-b-2 transition cursor-pointer flex items-center gap-2 whitespace-nowrap ${
-                activeTab === "moodboard"
-                  ? "border-amber-600 text-amber-700 font-bold"
-                  : "border-transparent text-zinc-500 hover:text-zinc-800"
-              }`}
+              className={`pb-3.5 px-2 text-sm font-semibold border-b-2 transition cursor-pointer flex items-center gap-2 whitespace-nowrap ${activeTab === "moodboard"
+                ? "border-amber-600 text-amber-700 font-bold"
+                : "border-transparent text-zinc-500 hover:text-zinc-800"
+                }`}
             >
               <Palette className="w-4 h-4" />
               <span>Mood Board</span>
@@ -204,11 +202,10 @@ export function EventDetailView({ event, packages }: EventDetailViewProps) {
             <button
               type="button"
               onClick={() => setActiveTab("packages")}
-              className={`pb-3.5 px-2 text-sm font-semibold border-b-2 transition cursor-pointer flex items-center gap-2 whitespace-nowrap ${
-                activeTab === "packages"
-                  ? "border-amber-600 text-amber-700 font-bold"
-                  : "border-transparent text-zinc-500 hover:text-zinc-800"
-              }`}
+              className={`pb-3.5 px-2 text-sm font-semibold border-b-2 transition cursor-pointer flex items-center gap-2 whitespace-nowrap ${activeTab === "packages"
+                ? "border-amber-600 text-amber-700 font-bold"
+                : "border-transparent text-zinc-500 hover:text-zinc-800"
+                }`}
             >
               <Layers className="w-4 h-4" />
               <span>Packages {selectedManualPkg && "(1 Saved)"}</span>
@@ -217,11 +214,10 @@ export function EventDetailView({ event, packages }: EventDetailViewProps) {
             <button
               type="button"
               onClick={() => setActiveTab("chat")}
-              className={`pb-3.5 px-2 text-sm font-semibold border-b-2 transition cursor-pointer flex items-center gap-2 whitespace-nowrap ${
-                activeTab === "chat"
-                  ? "border-amber-600 text-amber-700 font-bold"
-                  : "border-transparent text-zinc-500 hover:text-zinc-800"
-              }`}
+              className={`pb-3.5 px-2 text-sm font-semibold border-b-2 transition cursor-pointer flex items-center gap-2 whitespace-nowrap ${activeTab === "chat"
+                ? "border-amber-600 text-amber-700 font-bold"
+                : "border-transparent text-zinc-500 hover:text-zinc-800"
+                }`}
             >
               <MessageSquare className="w-4 h-4" />
               <span>AI Chat</span>
@@ -231,11 +227,10 @@ export function EventDetailView({ event, packages }: EventDetailViewProps) {
 
         {msg && (
           <div
-            className={`mb-6 p-4 rounded-xl text-xs font-semibold flex items-center gap-2 ${
-              msg.type === "success"
-                ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                : "bg-red-50 text-red-800 border border-red-200"
-            }`}
+            className={`mb-6 p-4 rounded-xl text-xs font-semibold flex items-center gap-2 ${msg.type === "success"
+              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+              : "bg-red-50 text-red-800 border border-red-200"
+              }`}
           >
             {msg.type === "success" ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
             <span>{msg.text}</span>
@@ -452,11 +447,10 @@ export function EventDetailView({ event, packages }: EventDetailViewProps) {
                         key={d}
                         type="button"
                         onClick={() => toggleDietary(d)}
-                        className={`text-xs px-2.5 py-1 rounded-lg border transition cursor-pointer ${
-                          dietary.includes(d)
-                            ? "bg-amber-100 border-amber-300 text-amber-900 font-semibold"
-                            : "bg-white border-zinc-200 text-zinc-600"
-                        }`}
+                        className={`text-xs px-2.5 py-1 rounded-lg border transition cursor-pointer ${dietary.includes(d)
+                          ? "bg-amber-100 border-amber-300 text-amber-900 font-semibold"
+                          : "bg-white border-zinc-200 text-zinc-600"
+                          }`}
                       >
                         {d}
                       </button>
@@ -472,11 +466,10 @@ export function EventDetailView({ event, packages }: EventDetailViewProps) {
                         key={cat}
                         type="button"
                         onClick={() => toggleCategory(cat)}
-                        className={`text-xs px-2.5 py-1 rounded-lg border capitalize transition cursor-pointer ${
-                          mustHave.includes(cat)
-                            ? "bg-amber-100 border-amber-300 text-amber-900 font-semibold"
-                            : "bg-white border-zinc-200 text-zinc-600"
-                        }`}
+                        className={`text-xs px-2.5 py-1 rounded-lg border capitalize transition cursor-pointer ${mustHave.includes(cat)
+                          ? "bg-amber-100 border-amber-300 text-amber-900 font-semibold"
+                          : "bg-white border-zinc-200 text-zinc-600"
+                          }`}
                       >
                         {cat.replace("_", " ")}
                       </button>
